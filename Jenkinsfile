@@ -18,7 +18,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Docker 이미지 빌드, --no-cache와 --progress=plain 옵션 추가
+                    // Docker 이미지 빌드
                     echo 'Starting Docker Build...'
                     def buildResult = sh(script: 'docker build --no-cache --progress=plain -t $DOCKER_IMAGE .', returnStdout: true)
                     echo buildResult // 빌드 로그를 출력
@@ -32,7 +32,8 @@ pipeline {
                     // Docker Hub 로그인
                     withCredentials([usernamePassword(credentialsId: 'hwwseo', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                         echo 'Logging into Docker Hub...'
-                        sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
+                        def loginResult = sh(script: 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin', returnStdout: true)
+                        echo loginResult // 로그인 결과 출력
                     }
                 }
             }
@@ -44,7 +45,7 @@ pipeline {
                     // Docker 이미지 푸시
                     echo 'Pushing Docker image to Docker Hub...'
                     def pushResult = sh(script: 'docker push $DOCKER_IMAGE', returnStdout: true)
-                    echo pushResult // 푸시 로그를 출력
+                    echo pushResult // 푸시 로그 출력
                 }
             }
         }
@@ -54,7 +55,8 @@ pipeline {
                 script {
                     // Kubernetes에 배포
                     echo 'Deploying to Kubernetes...'
-                    sh 'kubectl --kubeconfig=${K8S_CONFIG} apply -f my_template/nginx-deployment.yaml'
+                    def deployResult = sh(script: 'kubectl --kubeconfig=${K8S_CONFIG} apply -f my_template/nginx-deployment.yaml', returnStdout: true)
+                    echo deployResult // 배포 로그 출력
                 }
             }
         }
