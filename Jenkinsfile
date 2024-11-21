@@ -4,12 +4,13 @@ pipeline {
     environment {
         DOCKER_IMAGE = 'hwwseo/hwseo-site:latest'
         DOCKER_REGISTRY = 'docker.io'
-        K8S_CONFIG = '/home/jenkins/.kube/config'
+        K8S_CONFIG = '/home/jenkins/.kube/config' // Kubeconfig 파일 경로 설정
     }
 
     stages {
         stage('Clone Template') {
             steps {
+                // GitHub에서 템플릿 클론
                 git 'https://github.com/hwseo0406/hwseo_site.git'
             }
         }
@@ -17,7 +18,8 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh 'docker build -t hwwseo/hwseo-site:latest .'
+                    // Docker 이미지 빌드
+                    sh 'docker build -t $DOCKER_IMAGE .'
                 }
             }
         }
@@ -25,7 +27,8 @@ pipeline {
         stage('Docker Hub Login') {
             steps {
                 script {
-                    withCredentials([usernamePassword(credentialsId: hwwseo, usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                    // Docker Hub 로그인
+                    withCredentials([usernamePassword(credentialsId: 'hwwseo', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                         sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
                     }
                 }
@@ -36,7 +39,7 @@ pipeline {
             steps {
                 script {
                     // Docker 이미지 푸시
-                    sh 'docker push hwwseo/hwseo-site:latest'
+                    sh 'docker push $DOCKER_IMAGE'
                 }
             }
         }
@@ -44,6 +47,7 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 script {
+                    // Kubernetes에 배포
                     sh 'kubectl --kubeconfig=${K8S_CONFIG} apply -f my_template/nginx-deployment.yaml'
                 }
             }
@@ -52,10 +56,10 @@ pipeline {
     
     post {
         success {
-            echo 'success'
+            echo '빌드 및 배포가 성공적으로 완료되었습니다.'
         }
         failure {
-            echo 'fail'
+            echo '빌드 또는 배포 중 오류가 발생했습니다.'
         }
     }
 }
