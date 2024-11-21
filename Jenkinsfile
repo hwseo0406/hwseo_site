@@ -4,7 +4,7 @@ pipeline {
     environment {
         DOCKER_IMAGE = 'hwwseo/hwseo-site:latest'
         DOCKER_REGISTRY = 'docker.io'
-        K8S_CONFIG = '/home/jenkins/.kube/config' // Kubeconfig 파일 경로 설정
+        K8S_CONFIG = '/home/master01/jenkins/.kube/config' // Kubeconfig 파일 경로 설정
     }
 
     stages {
