@@ -20,7 +20,7 @@ pipeline {
                 script {
                     // Docker 이미지 빌드 (Dockerfile 경로 지정)
                     echo 'Starting Docker Build...'
-                    def buildResult = sh(script: 'docker build --no-cache --progress=plain -f Dockerfile -t $DOCKER_IMAGE .', returnStdout: true)
+                    def buildResult = sh(script: 'docker build -f Dockerfile -t $DOCKER_IMAGE .', returnStdout: true)
                     echo buildResult // 빌드 로그를 출력
                 }
             }
