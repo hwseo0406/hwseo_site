@@ -52,10 +52,10 @@ pipeline {
     
     post {
         success {
-            echo '파이프라인이 성공적으로 완료되었습니다.'
+            echo 'success'
         }
         failure {
-            echo '파이프라인 실행 중 오류가 발생했습니다.'
+            echo 'fail'
         }
     }
 }
