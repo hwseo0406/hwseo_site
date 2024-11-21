@@ -14,7 +14,7 @@ pipeline {
                 git 'https://github.com/hwseo0406/hwseo_site.git'
             }
         }
-        
+
         stage('Build Docker Image') {
             steps {
                 script {
@@ -25,31 +25,31 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Docker Hub Login') {
             steps {
                 script {
                     // Docker Hub 로그인
                     withCredentials([usernamePassword(credentialsId: 'hwwseo', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                        echo 'Logging into Docker Hub...'
+                        echo 'Docker Hub 로그인 중...'
                         def loginResult = sh(script: 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin', returnStdout: true)
-                        echo loginResult // 로그인 결과 출력
+                        echo "Docker Hub 로그인 결과: ${loginResult}"
                     }
                 }
             }
         }
-        
+
         stage('Push Docker Image') {
             steps {
                 script {
                     // Docker 이미지 푸시
-                    echo 'Pushing Docker image to Docker Hub...'
+                    echo 'Docker 이미지를 Docker Hub로 푸시 중...'
                     def pushResult = sh(script: 'docker push $DOCKER_IMAGE', returnStdout: true)
-                    echo pushResult // 푸시 로그 출력
+                    echo "푸시 결과: ${pushResult}"
                 }
             }
         }
-        
+
         stage('Deploy to Kubernetes') {
             steps {
                 script {
@@ -61,7 +61,7 @@ pipeline {
             }
         }
     }
-    
+
     post {
         success {
             echo '빌드 및 배포가 성공적으로 완료되었습니다.'
