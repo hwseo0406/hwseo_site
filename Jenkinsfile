@@ -1,12 +1,6 @@
 pipeline {
     agent any
 
-    environment {
-        DOCKER_IMAGE = 'hwwseo/hwseo-site:latest' // 이미지를 빌드할 이름
-        DOCKER_REGISTRY = 'docker.io'             // Docker Hub 사용
-        K8S_CONFIG = '/home/master01/jenkins/.kube/config' // Kubeconfig 경로
-    }
-
     stages {
         stage('Clone Template') {
             steps {
@@ -20,7 +14,7 @@ pipeline {
                 echo "Building Image with Podman..."
                 script {
                     sh '''
-                        podman build -f Dockerfile -t $DOCKER_IMAGE .
+                        podman build -f Dockerfile -t hwwseo/hwseo-site:latest .
                     '''
                 }
             }
@@ -32,7 +26,7 @@ pipeline {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'hwwseo', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                         sh '''
-                            echo $DOCKER_PASSWORD | podman login -u $DOCKER_USERNAME --password-stdin $DOCKER_REGISTRY
+                            echo $DOCKER_PASSWORD | podman login -u $DOCKER_USERNAME --password-stdin docker.io
                         '''
                     }
                 }
@@ -44,7 +38,7 @@ pipeline {
                 echo "Pushing Image to Docker Hub using Podman..."
                 script {
                     sh '''
-                        podman push $DOCKER_IMAGE
+                        podman push hwwseo/hwseo-site:latest
                     '''
                 }
             }
@@ -55,7 +49,7 @@ pipeline {
                 echo "Deploying to Kubernetes..."
                 script {
                     sh '''
-                        kubectl --kubeconfig=${K8S_CONFIG} apply -f my_template/nginx-deployment.yaml
+                        kubectl --kubeconfig=/home/master01/jenkins/.kube/config apply -f my_template/nginx-deployment.yaml
                     '''
                 }
             }
