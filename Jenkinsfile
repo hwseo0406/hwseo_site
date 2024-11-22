@@ -14,7 +14,7 @@ pipeline {
                 echo "Building Image with Podman..."
                 script {
                     sh '''
-                        podman build -f Dockerfile -t hwwseo/hwseo-site:latest .
+                        podman build -t hwwseo/hwseo-site:latest .
                     '''
                 }
             }
@@ -49,7 +49,7 @@ pipeline {
                 echo "Deploying to Kubernetes..."
                 script {
                     sh '''
-                        kubectl --kubeconfig=/home/master01/jenkins/.kube/config apply -f my_template/nginx-deployment.yaml
+                        kubectl apply -f nginx-deployment.yaml
                     '''
                 }
             }
