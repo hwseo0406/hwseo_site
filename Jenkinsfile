@@ -29,7 +29,7 @@ pipeline {
                     // Dockerfile을 사용하여 이미지를 빌드
                     def imageTag = "${DOCKER_IMAGE}:${VERSION}"
                     sh """
-                        docker build -t ${imageTag} .
+                        podman build -t ${imageTag} .
                     """
                 }
             }
@@ -40,8 +40,8 @@ pipeline {
                 script {
                     // Docker Hub로 이미지를 푸시
                     def imageTag = "${DOCKER_IMAGE}:${VERSION}"
-                    docker.withRegistry('https://index.docker.io/v1/', 'docker-hub-credentials') {
-                        docker.image(imageTag).push()
+                    podman.withRegistry('https://index.docker.io/v1/', 'docker-hub-credentials') {
+                        podman.image(imageTag).push()
                     }
                 }
             }

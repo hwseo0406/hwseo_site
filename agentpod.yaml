@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: jenkins-agent-with-docker
+  name: jenkins-agent-with-podman
 spec:
   containers:
   - name: jenkins-agent
@@ -9,18 +9,18 @@ spec:
     volumeMounts:
       - mountPath: "/home/jenkins/agent"
         name: workspace-volume
-      - mountPath: /var/run/docker.sock
-        name: docker-socket
-  - name: docker
-    image: docker:latest
+      - mountPath: /var/run/podman.sock  # Podman 소켓 사용
+        name: podman-socket
+  - name: podman  # Podman 컨테이너로 변경
+    image: quay.io/podman/stable:latest
     volumeMounts:
-      - mountPath: /var/run/docker.sock
-        name: docker-socket
+      - mountPath: /var/run/podman.sock  # Podman 소켓 마운트
+        name: podman-socket
   volumes:
     - name: workspace-volume
       emptyDir: {}
-    - name: docker-socket
+    - name: podman-socket  # Podman 소켓
       hostPath:
-        path: /var/run/docker.sock
+        path: /var/run/podman.sock  # Podman 소켓 파일 경로
         type: Socket
   restartPolicy: Never
