@@ -6,27 +6,12 @@ metadata:
 spec:
   containers:
     - name: docker
-      image: docker:latest
+      image: docker:19.03
       command:
         - cat
       tty: true
       securityContext:
         privileged: true
-      volumeMounts:
-        - name: dockersock
-          mountPath: /var/run/docker.sock
-    - name: jnlp
-      image: jenkins/inbound-agent:latest
-      env:
-        - name: JENKINS_URL
-          value: "http://jenkins.jenkins.svc.cluster.local:8080"
-        - name: JENKINS_SECRET
-          valueFrom:
-            secretKeyRef:
-              name: jenkins-agent-secret
-              key: jenkins-secret
-        - name: JENKINS_AGENT_NAME
-          value: "hwseo-site-agent"
       volumeMounts:
         - name: dockersock
           mountPath: /var/run/docker.sock
