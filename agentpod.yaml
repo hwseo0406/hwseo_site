@@ -6,7 +6,7 @@ metadata:
 spec:
   containers:
     - name: docker
-      image: docker:latest
+      image: docker:26.1.3
       command:
         - cat
       tty: true
@@ -15,7 +15,8 @@ spec:
       volumeMounts:
         - name: dockersock
           mountPath: /var/run/docker.sock
-      volumes:
-        - name: dockersock
-          hostPath:
-            path: /var/run/docker.sock
+  volumes:
+    - name: dockersock
+      hostPath:
+        path: /var/run/docker.sock
+        type: Socket
