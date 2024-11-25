@@ -26,7 +26,7 @@ spec:
               name: jenkins-agent-secret
               key: jenkins-secret
         - name: JENKINS_AGENT_NAME
-          value: "hwseo-site-11-lpz98-1v23w-pjwqd"
+          value: 
       volumeMounts:
         - name: dockersock
           mountPath: /var/run/docker.sock
