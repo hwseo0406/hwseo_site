@@ -20,11 +20,11 @@ spec:
       env:
         - name: JENKINS_URL
           value: "http://jenkins.jenkins.svc.cluster.local:8080"
-        - name: JENKINS_SECRET
-          valueFrom:
-            secretKeyRef:
-              name: jenkins-agent-secret
-              key: jenkins-secret
+        # - name: JENKINS_SECRET
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: jenkins-agent-secret
+        #       key: jenkins-secret
         - name: JENKINS_AGENT_NAME
           value: "hwseo-site-agent"
       volumeMounts:
