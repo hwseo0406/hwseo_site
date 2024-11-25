@@ -24,7 +24,7 @@ spec:
           valueFrom:
             secretKeyRef:
               name: jenkins-agent-secret
-              key: YUhkelpXOHRZV2RsYm5RdGMyVmpjbVYw
+              key: jenkins-secret
         - name: JENKINS_AGENT_NAME
           value: "hwseo-site-agent"
       volumeMounts:
