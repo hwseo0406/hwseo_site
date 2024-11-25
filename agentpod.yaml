@@ -5,12 +5,13 @@ metadata:
     some-label: pod
 spec:
   containers:
-    - name: jnlp
-      image: jenkins/inbound-agent
-      args: ['$(JENKINS_SECRET)', '$(JENKINS_NAME)']
-      env:
-        - name: DOCKER_HOST
-          value: "unix:///var/run/docker.sock"
+    - name: docker
+      image: docker:26.1.3
+      command:
+        - cat
+      tty: true
+      securityContext:
+        privileged: true
       volumeMounts:
         - name: dockersock
           mountPath: /var/run/docker.sock
