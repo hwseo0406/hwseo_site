@@ -51,51 +51,51 @@ pipeline {
             }
         }
 
-    //     stage('Checkout k8s-manifests') {
-    //         steps {
-    //             container('jnlp') {
-    //                 script {
-    //                     // 'k8s-manifests' 리포지토리에서 매니페스트 코드 체크아웃
-    //                     git credentialsId: 'github-token', url: 'https://github.com/hwseo0406/k8s-manifests.git', branch: 'main'
-    //                 }
-    //             }
-    //         }
-    //     }
+        stage('Checkout k8s-manifests') {
+            steps {
+                container('jnlp') {
+                    script {
+                        // 'k8s-manifests' 리포지토리에서 매니페스트 코드 체크아웃
+                        git credentialsId: 'github-token', url: 'https://github.com/hwseo0406/k8s-manifests.git', branch: 'main'
+                    }
+                }
+            }
+        }
 
-    //     stage('Update nginx-deployment.yaml') {
-    //         steps {
-    //             script {
-    //                 def newImage = "${DOCKER_IMAGE}:${VERSION}"
-    //                 // 'k8s-manifests/manifests/deployments' 경로로 이동하여 nginx-deployment.yaml 파일 수정
-    //                 dir('manifests/deployments') {
-    //                     sh """
-    //                     # 정규식을 사용하여 image 라인에서 태그 부분만 교체
-    //                     sed -i 's|image: hwwseo/hwseo-site:[^ ]*|image: ${newImage}|g' nginx-deployment.yaml
-    //                     cat nginx-deployment.yaml  # 변경 사항 확인
-    //                     """
-    //                 }
-    //             }
-    //         }
-    //     }
+        stage('Update nginx-deployment.yaml') {
+            steps {
+                script {
+                    def newImage = "${DOCKER_IMAGE}:${VERSION}"
+                    // 'k8s-manifests/manifests/deployments' 경로로 이동하여 nginx-deployment.yaml 파일 수정
+                    dir('manifests/deployments') {
+                        sh """
+                        # 정규식을 사용하여 image 라인에서 태그 부분만 교체
+                        sed -i 's|image: hwwseo/hwseo-site:[^ ]*|image: ${newImage}|g' nginx-deployment.yaml
+                        cat nginx-deployment.yaml  # 변경 사항 확인
+                        """
+                    }
+                }
+            }
+        }
 
-    //     stage('Commit and Push nginx-deployment.yaml') {
-    //         steps {
-    //             container('jnlp') {
-    //                 script {
-    //                     withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'GITHUB_USER', passwordVariable: 'GITHUB_TOKEN')]) {
-    //                         sh """
-    //                         git config --global user.email "hse05078@gmail.com"
-    //                         git config --global user.name "hwseo0406"
-    //                         git remote set-url origin https://${GITHUB_USER}:${GITHUB_TOKEN}@github.com/hwseo0406/k8s-manifests.git
-    //                         git add manifests/deployments/nginx-deployment.yaml
-    //                         git commit -m "Update nginx deployment image version to ${VERSION} [skip ci]"
-    //                         git push origin main
-    //                         """
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     }
+        stage('Commit and Push nginx-deployment.yaml') {
+            steps {
+                container('jnlp') {
+                    script {
+                        withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'GITHUB_USER', passwordVariable: 'GITHUB_TOKEN')]) {
+                            sh """
+                            git config --global user.email "hse05078@gmail.com"
+                            git config --global user.name "hwseo0406"
+                            git remote set-url origin https://${GITHUB_USER}:${GITHUB_TOKEN}@github.com/hwseo0406/k8s-manifests.git
+                            git add manifests/deployments/nginx-deployment.yaml
+                            git commit -m "Update nginx deployment image version to ${VERSION} [skip ci]"
+                            git push origin main
+                            """
+                        }
+                    }
+                }
+            }
+        }
      }
 
     post {
