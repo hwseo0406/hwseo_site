@@ -28,7 +28,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 container('docker') {
-                    dir('.') { // 빌드 컨텍스트를 최상위 디렉토리로 변경
+                    dir('.') { // 빌드 컨텍스트를 최상위 디렉토리로 변경함
                         script {
                             def imageTag = "${DOCKER_IMAGE}:${VERSION}"
                             docker.build(imageTag, "-f Dockerfile .")
