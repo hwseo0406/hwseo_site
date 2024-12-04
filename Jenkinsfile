@@ -10,7 +10,7 @@ pipeline {
         GITHUB_CREDENTIALS = credentials('github-token')
         DOCKER_CREDENTIALS = credentials('docker-hub-credentials')
         DOCKER_IMAGE = 'hwwseo/hwseo-site'
-        VERSION = "${BUILD_NUMBER}" // Jenkins 빌드 번호를 버전으로 사용
+        VERSION = "${BUILD_NUMBER}" // Jenkins 빌드 번호를 버전으로 사용함
     }
 
     stages {
