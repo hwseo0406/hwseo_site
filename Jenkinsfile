@@ -70,7 +70,7 @@ pipeline {
     //                 dir('manifests/deployments') {
     //                     sh """
     //                     # 정규식을 사용하여 image 라인에서 태그 부분만 교체
-    //                     sed -i 's|image: hanjunn/hanjun-site:[^ ]*|image: ${newImage}|g' nginx-deployment.yaml
+    //                     sed -i 's|image: hwwseo/hwseo-site:[^ ]*|image: ${newImage}|g' nginx-deployment.yaml
     //                     cat nginx-deployment.yaml  # 변경 사항 확인
     //                     """
     //                 }
@@ -84,9 +84,9 @@ pipeline {
     //                 script {
     //                     withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'GITHUB_USER', passwordVariable: 'GITHUB_TOKEN')]) {
     //                         sh """
-    //                         git config --global user.email "qwedfr79@naver.com"
-    //                         git config --global user.name "hanjunnn"
-    //                         git remote set-url origin https://${GITHUB_USER}:${GITHUB_TOKEN}@github.com/hanjunnn/k8s-manifests.git
+    //                         git config --global user.email "hse05078@gmail.com"
+    //                         git config --global user.name "hwseo0406"
+    //                         git remote set-url origin https://${GITHUB_USER}:${GITHUB_TOKEN}@github.com/hwseo0406/k8s-manifests.git
     //                         git add manifests/deployments/nginx-deployment.yaml
     //                         git commit -m "Update nginx deployment image version to ${VERSION} [skip ci]"
     //                         git push origin main
