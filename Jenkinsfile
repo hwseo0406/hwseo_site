@@ -29,7 +29,7 @@ pipeline {
                     // Dockerfile을 사용하여 이미지를 빌드
                     def imageTag = "${DOCKER_IMAGE}:${VERSION}"
                     sh """
-                        docker build -t ${imageTag} .
+                        docker build -t Dockerfile .
                     """
                 }
             }
