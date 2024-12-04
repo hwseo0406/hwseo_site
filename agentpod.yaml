@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   labels:
-    jenkins/label: docker-agent
+    some-label: pod
 spec:
   containers:
     - name: docker
@@ -15,15 +15,10 @@ spec:
       volumeMounts:
         - name: dockersock
           mountPath: /var/run/docker.sock
-        - name: workspace-volume
-          mountPath: /home/jenkins/agent
   volumes:
     - name: dockersock
       hostPath:
         path: /var/run/docker.sock
-        type: Socket
-    - name: workspace-volume
-      emptyDir: {}
 
 
 # apiVersion: v1
