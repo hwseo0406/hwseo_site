@@ -46,6 +46,19 @@ spec:
       }
     }
 
+    stage('Skip CI Check') {
+      steps {
+        script {
+          def skip = sh(script: "git log -1 --pretty=%B | grep -c '\\[skip ci\\]'", returnStatus: true)
+          if (skip != 0) {
+            echo "⏭️ [skip ci] 커밋이 감지되어 파이프라인을 종료합니다."
+            currentBuild.result = 'SUCCESS'
+            error("[skip ci] detected - stopping pipeline.")
+          }
+        }
+      }
+    }
+
     stage('Check Kaniko Config') {
       steps {
         container('kaniko') {
@@ -72,7 +85,7 @@ spec:
     stage('Update Manifest & Push') {
       steps {
         container('jnlp') {
-          withCredentials([usernamePassword(credentialsId: 'hwseo github token', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_TOKEN')]) {
+          withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_TOKEN')]) {
             script {
               def newImage = "${FULL_IMAGE}"
               sh """
