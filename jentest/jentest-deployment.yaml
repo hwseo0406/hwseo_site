@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: nginx
-        image: harbor.locall:30004/jentest/nginx:56
+        image: harbor.locall:30004/jentest/nginx:57
         ports:
         - containerPort: 80
       imagePullSecrets:
