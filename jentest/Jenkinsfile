@@ -16,6 +16,17 @@ spec:
     volumeMounts:
     - name: harbor-creds
       mountPath: /kaniko/.docker
+    - name: workspace-volume
+      mountPath: /home/jenkins/agent
+  - name: kubectl
+    image: bitnami/kubectl:latest
+    command:
+    - sleep
+    args:
+    - "3600"
+    volumeMounts:
+    - name: workspace-volume
+      mountPath: /home/jenkins/agent
   - name: jnlp
     image: jenkins/inbound-agent:latest
   volumes:
@@ -25,6 +36,8 @@ spec:
       items:
       - key: .dockerconfigjson
         path: config.json
+  - name: workspace-volume
+    emptyDir: {}
 """
     }
   }
@@ -74,22 +87,9 @@ spec:
       }
     }
 
-    stage('Install kubectl') {
-      steps {
-        container('kaniko') {
-          sh '''
-            echo "✅ Installing kubectl..."
-            wget -q -O /usr/bin/kubectl https://dl.k8s.io/release/$(wget -qO- https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl
-            chmod +x /usr/bin/kubectl
-            kubectl version --client || echo "❌ kubectl install failed"
-          '''
-        }
-      }
-    }
-
     stage('Deploy to Kubernetes') {
       steps {
-        container('kaniko') {
+        container('kubectl') {
           sh 'kubectl apply -f ./jentest/jentest-deployment.yaml'
         }
       }
