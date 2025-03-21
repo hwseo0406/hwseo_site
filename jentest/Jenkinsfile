@@ -1,8 +1,8 @@
 pipeline {
   agent {
     kubernetes {
-        inheritFrom 'kaniko-agent'
-        defaultContainer 'kaniko'
+        inheritFrom 'kaniko'
+        defaultContainer 'jnlp'
     }
   }
 
