@@ -10,7 +10,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git credentialsId: 'github-token', url: 'https://github.com/your-id/your-repo.git', branch: 'main'
+                git credentialsId: 'github-token', url: 'https://github.com/hwseo0406/hwseo_site.git', branch: 'main'
             }
         }
 
@@ -32,8 +32,8 @@ pipeline {
         stage('Update Manifest') {
             steps {
                 sh """
-                sed -i 's|image: .*|image: ${FULL_IMAGE}|' deployment.yaml
-                cat deployment.yaml
+                sed -i 's|image: .*|image: ${FULL_IMAGE}|' jentest-deployment.yaml
+                cat jentest-deployment.yaml
                 """
             }
         }
@@ -41,7 +41,7 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 withKubeConfig([credentialsId: 'k8s-config']) {
-                    sh 'kubectl apply -f deployment.yaml'
+                    sh 'kubectl apply -f jentest-deployment.yaml'
                 }
             }
         }
