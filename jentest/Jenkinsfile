@@ -1,8 +1,8 @@
 pipeline {
   agent {
     kubernetes {
-        defaultContainer 'jnlp'
-        inheritFrom 'kaniko'
+      inheritFrom 'kaniko'
+      defaultContainer 'jnlp'
     }
   }
 
@@ -19,17 +19,26 @@ pipeline {
       }
     }
 
+    // 🔍 여기에 추가해줘!
+    stage('Check Kaniko Config') {
+      steps {
+        container('kaniko') {
+          sh 'cat /kaniko/.docker/config.json || echo "❌ config.json not found"'
+        }
+      }
+    }
+
     stage('Build & Push with Kaniko') {
       steps {
         container('kaniko') {
-          sh """
+          sh '''
             /kaniko/executor \
               --context `pwd` \
               --dockerfile `pwd`/Dockerfile \
               --destination=${FULL_IMAGE} \
               --insecure \
               --skip-tls-verify
-          """
+          '''
         }
       }
     }
