@@ -68,8 +68,8 @@ spec:
     stage('Update Manifest') {
       steps {
         sh """
-        sed -i 's|image: .*|image: ${FULL_IMAGE}|' jentest-deployment.yaml
-        cat jentest-deployment.yaml
+        sed -i 's|image: .*|image: ${FULL_IMAGE}|' ./jentest/jentest-deployment.yaml
+        cat ./jentest/jentest-deployment.yaml
         """
       }
     }
@@ -77,7 +77,7 @@ spec:
     stage('Deploy to Kubernetes') {
       steps {
         withKubeConfig([credentialsId: 'k8s-config']) {
-          sh 'kubectl apply -f jentest-deployment.yaml'
+          sh 'kubectl apply -f ./jentest/jentest-deployment.yaml'
         }
       }
     }
