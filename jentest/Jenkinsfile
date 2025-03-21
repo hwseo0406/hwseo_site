@@ -40,7 +40,7 @@ spec:
   }
 
   stages {
-    stage('Checkout Source') {
+    stage('Checkout') {
       steps {
         git credentialsId: 'github-token', url: 'https://github.com/hwseo0406/hwseo_site.git', branch: 'main'
       }
@@ -54,7 +54,7 @@ spec:
       }
     }
 
-    stage('Build & Push Image') {
+    stage('Build & Push with Kaniko') {
       steps {
         container('kaniko') {
           sh """
@@ -69,7 +69,7 @@ spec:
       }
     }
 
-    stage('Update Deployment Manifest') {
+    stage('Update Manifest') {
       steps {
         sh """
         sed -i 's|image: .*|image: ${FULL_IMAGE}|' ./jentest/jentest-deployment.yaml
@@ -78,17 +78,10 @@ spec:
       }
     }
 
-    stage('Push Updated Manifest') {
+    stage('Deploy to Kubernetes') {
       steps {
-        withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_TOKEN')]) {
-          sh """
-          git config user.name "jenkins"
-          git config user.email "jenkins@example.com"
-          git remote set-url origin https://${GIT_USER}:${GIT_TOKEN}@github.com/hwseo0406/hwseo_site.git
-          git add ./jentest/jentest-deployment.yaml
-          git commit -m "Update image to ${FULL_IMAGE} [skip ci]" || echo "No changes to commit"
-          git push origin main
-          """
+        withKubeConfig([credentialsId: 'jenkinsSA']) {
+          sh 'kubectl apply -f ./jentest/jentest-deployment.yaml'
         }
       }
     }
@@ -96,10 +89,10 @@ spec:
 
   post {
     success {
-      echo "✅ 이미지 푸시 및 매니페스트 업데이트 성공 (GitOps 방식)"
+      echo "✅ 배포 성공: ${FULL_IMAGE}"
     }
     failure {
-      echo "❌ 실패! 로그 확인 필요"
+      echo "❌ 실패. 로그를 확인하세요."
     }
   }
 }
