@@ -48,12 +48,17 @@ spec:
 
     stage('Skip CI Check') {
       steps {
-        script {
-          def skip = sh(script: "git log -1 --pretty=%B | grep -c '\\[skip ci\\]'", returnStatus: true)
-          if (skip != 0) {
-            echo "⏭️ [skip ci] 커밋이 감지되어 파이프라인을 종료합니다."
-            currentBuild.result = 'SUCCESS'
-            error("[skip ci] detected - stopping pipeline.")
+        container('jnlp') {
+          script {
+            def skip = sh(
+              script: "git log -1 --pretty=%B | grep -c '\\[skip ci\\]' || true",
+              returnStdout: true
+            ).trim()
+            if (skip == "1") {
+              echo "⏭️ [skip ci] 커밋이 감지되어 파이프라인을 종료합니다."
+              currentBuild.result = 'SUCCESS'
+              error("[skip ci] detected - stopping pipeline.")
+            }
           }
         }
       }
