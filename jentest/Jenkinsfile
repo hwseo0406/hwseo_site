@@ -1,8 +1,25 @@
 pipeline {
     agent {
         kubernetes {
-            defaultContainer 'jnlp'
-            inheritFrom 'kaniko-agent'
+            yaml """
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+  - name: kaniko
+    image: gcr.io/kaniko-project/executor:latest
+    command:
+    - /busybox/cat
+    tty: true
+    volumeMounts:
+    - name: kaniko-secret
+      mountPath: /kaniko/.docker
+  volumes:
+  - name: kaniko-secret
+    secret:
+      secretName: harbor-creds
+"""
+            defaultContainer 'kaniko'
         }
     }
 
@@ -21,16 +38,14 @@ pipeline {
 
         stage('Build & Push with Kaniko') {
             steps {
-                container('kaniko') {
-                    sh """
-                    /kaniko/executor \
-                      --context `pwd` \
-                      --dockerfile `pwd`/Dockerfile \
-                      --destination=${FULL_IMAGE} \
-                      --insecure \
-                      --skip-tls-verify
-                    """
-                }
+                sh '''
+                /kaniko/executor \
+                  --context `pwd` \
+                  --dockerfile `pwd`/Dockerfile \
+                  --destination=${FULL_IMAGE} \
+                  --insecure \
+                  --skip-tls-verify
+                '''
             }
         }
 
