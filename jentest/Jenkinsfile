@@ -74,9 +74,22 @@ spec:
       }
     }
 
+    stage('Install kubectl') {
+      steps {
+        container('kaniko') {
+          sh '''
+            echo "✅ Installing kubectl..."
+            wget -q -O /usr/bin/kubectl https://dl.k8s.io/release/$(wget -qO- https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl
+            chmod +x /usr/bin/kubectl
+            kubectl version --client || echo "❌ kubectl install failed"
+          '''
+        }
+      }
+    }
+
     stage('Deploy to Kubernetes') {
       steps {
-        withKubeConfig([credentialsId: 'jenkinsSA']) {
+        container('kaniko') {
           sh 'kubectl apply -f ./jentest/jentest-deployment.yaml'
         }
       }
