@@ -1,39 +1,6 @@
 pipeline {
     agent {
         kubernetes {
-yaml """
-apiVersion: v1
-kind: Pod
-spec:
-  containers:
-  - name: jnlp
-    image: jenkins/inbound-agent:3283.v92c105e0f819-8
-    workingDir: /home/jenkins/agent
-    volumeMounts:
-    - mountPath: /home/jenkins/agent
-      name: workspace-volume
-
-  - name: kaniko
-    image: gcr.io/kaniko-project/executor:latest
-    command:
-    - /busybox/sh
-    args:
-    - -c
-    - cat  # dummy entrypoint, 실제 실행은 Pipeline에서 함
-    tty: true
-    volumeMounts:
-    - mountPath: /kaniko/.docker
-      name: harbor-creds
-    - mountPath: /workspace
-      name: workspace-volume
-
-  volumes:
-  - name: workspace-volume
-    emptyDir: {}
-  - name: harbor-creds
-    secret:
-      secretName: harbor-creds
-"""
             defaultContainer 'kaniko'
         }
     }
