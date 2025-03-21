@@ -22,14 +22,9 @@ pipeline {
     stage('Build & Push with Kaniko') {
       steps {
         container('kaniko') {
-          sh '''
-            /kaniko/executor \
-              --context `pwd` \
-              --dockerfile `pwd`/Dockerfile \
-              --destination=${FULL_IMAGE} \
-              --insecure \
-              --skip-tls-verify
-          '''
+            script {
+            def context = sh(script: 'pwd', returnStdout: true).trim()
+            sh "/kaniko/executor --context=${context} --dockerfile=${context}/Dockerfile --destination=${FULL_IMAGE} --insecure --skip-tls-verify"
         }
       }
     }
