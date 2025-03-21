@@ -9,10 +9,8 @@ spec:
   containers:
   - name: kaniko
     image: gcr.io/kaniko-project/executor:debug
-    command:
-    - sleep
-    args:
-    - "3600"
+    command: ["sleep"]
+    args: ["3600"]
     volumeMounts:
     - name: harbor-creds
       mountPath: /kaniko/.docker
@@ -40,7 +38,7 @@ spec:
   }
 
   stages {
-    stage('Checkout') {
+    stage('Checkout App Repo') {
       steps {
         git credentialsId: 'github-token', url: 'https://github.com/hwseo0406/hwseo_site.git', branch: 'main'
       }
@@ -87,6 +85,18 @@ spec:
       }
     }
 
+    stage('Clone Manifests Repo') {
+      steps {
+        container('jnlp') {
+          withCredentials([usernamePassword(credentialsId: 'hwseo github token', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_TOKEN')]) {
+            sh """
+              git clone https://${GIT_USER}:${GIT_TOKEN}@github.com/hwseo0406/manifests.git
+            """
+          }
+        }
+      }
+    }
+
     stage('Update Manifest & Push') {
       steps {
         container('jnlp') {
@@ -94,14 +104,13 @@ spec:
             script {
               def newImage = "${FULL_IMAGE}"
               sh """
-                sed -i 's|image: .*|image: ${newImage}|' ./jentest/jentest-deployment.yaml
-                cat ./jentest/jentest-deployment.yaml
+                sed -i 's|image: .*|image: ${newImage}|' manifests/jentest/jentest-deployment.yaml
+                cat manifests/jentest/jentest-deployment.yaml
 
+                cd manifests
                 git config --global user.email "hse05078@gmail.com"
                 git config --global user.name "hwseo0406"
-                git remote set-url origin https://${GIT_USER}:${GIT_TOKEN}@github.com/hwseo0406/hwseo_site.git
-
-                git add ./jentest/jentest-deployment.yaml
+                git add jentest/jentest-deployment.yaml
                 git commit -m "Update image to ${newImage} [skip ci]" || echo "No changes to commit"
                 git push origin main
               """
