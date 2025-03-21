@@ -76,7 +76,7 @@ spec:
 
     stage('Deploy to Kubernetes') {
       steps {
-        withKubeConfig([credentialsId: 'k8s-config']) {
+        withKubeConfig([credentialsId: 'jenkinsSA']) {
           sh 'kubectl apply -f ./jentest/jentest-deployment.yaml'
         }
       }
