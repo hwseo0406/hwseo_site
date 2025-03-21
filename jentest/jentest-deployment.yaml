@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jentest-deployment
+  namespace: test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jentest
+  template:
+    metadata:
+      labels:
+        app: jentest
+    spec:
+      containers:
+      - name: nginx
+        image: harbor.locall:30004/jentest/nginx:latest
+        ports:
+        - containerPort: 80
+      imagePullSecrets:
+      - name: harbor-registry

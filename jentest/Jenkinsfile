@@ -1,0 +1,58 @@
+pipeline {
+    agent any
+
+    environment {
+        IMAGE_NAME = "harbor.locall:30004/jentest/nginx"
+        IMAGE_TAG = "${BUILD_NUMBER}"
+        FULL_IMAGE = "${IMAGE_NAME}:${IMAGE_TAG}"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git credentialsId: 'github-token', url: 'https://github.com/your-id/your-repo.git', branch: 'main'
+            }
+        }
+
+        stage('Build & Push with Kaniko') {
+            steps {
+                container('kaniko') {
+                    sh """
+                    /kaniko/executor \
+                      --context `pwd` \
+                      --dockerfile `pwd`/Dockerfile \
+                      --destination=${FULL_IMAGE} \
+                      --insecure \
+                      --skip-tls-verify
+                    """
+                }
+            }
+        }
+
+        stage('Update Manifest') {
+            steps {
+                sh """
+                sed -i 's|image: .*|image: ${FULL_IMAGE}|' deployment.yaml
+                cat deployment.yaml
+                """
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                withKubeConfig([credentialsId: 'k8s-config']) {
+                    sh 'kubectl apply -f deployment.yaml'
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "✅ 배포 성공: ${FULL_IMAGE}"
+        }
+        failure {
+            echo "❌ 실패. 로그를 확인하세요."
+        }
+    }
+}
