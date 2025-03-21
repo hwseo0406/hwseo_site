@@ -1,8 +1,32 @@
 pipeline {
   agent {
     kubernetes {
-        defaultContainer 'jnlp'
-        inheritFrom 'kaniko'
+      defaultContainer 'kaniko'
+      yaml """
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+  - name: kaniko
+    image: gcr.io/kaniko-project/executor:debug
+    command:
+    - sleep
+    args:
+    - "3600"
+    volumeMounts:
+    - name: harbor-creds
+      mountPath: /kaniko/.docker
+  - name: jnlp
+    image: jenkins/inbound-agent:latest
+    args: ['']
+  volumes:
+  - name: harbor-creds
+    secret:
+      secretName: harbor-creds
+      items:
+      - key: .dockerconfigjson
+        path: config.json
+"""
     }
   }
 
@@ -16,6 +40,14 @@ pipeline {
     stage('Checkout') {
       steps {
         git credentialsId: 'github-token', url: 'https://github.com/hwseo0406/hwseo_site.git', branch: 'main'
+      }
+    }
+
+    stage('Check Kaniko Config') {
+      steps {
+        container('kaniko') {
+          sh 'cat /kaniko/.docker/config.json || echo "❌ config.json not found"'
+        }
       }
     }
 
