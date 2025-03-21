@@ -1,5 +1,9 @@
 pipeline {
-    agent any
+    agent {
+        kubernetes {
+            label 'kaniko-agent'
+        }
+    }
 
     environment {
         IMAGE_NAME = "harbor.locall:30004/jentest/nginx"
