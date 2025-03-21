@@ -72,7 +72,7 @@ spec:
     stage('Update Manifest & Push') {
       steps {
         container('jnlp') {
-          withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_TOKEN')]) {
+          withCredentials([usernamePassword(credentialsId: 'hwseo github token', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_TOKEN')]) {
             script {
               def newImage = "${FULL_IMAGE}"
               sh """
