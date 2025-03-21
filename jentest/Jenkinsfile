@@ -71,6 +71,7 @@ spec:
 
     stage('Update Manifest & Push') {
       steps {
+        container('jnlp'){
         script {
           def newImage = "${FULL_IMAGE}"
           sh """
@@ -82,6 +83,7 @@ spec:
           git commit -m "Update image to ${newImage} [skip ci]"
           git push origin main
           """
+        }
         }
       }
     }
