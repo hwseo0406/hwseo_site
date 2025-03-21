@@ -21,6 +21,7 @@ pipeline {
 
         stage('Build & Push with Kaniko') {
             steps {
+                container('kaniko') {
                 sh '''
                 /kaniko/executor \
                   --context `pwd` \
@@ -29,6 +30,7 @@ pipeline {
                   --insecure \
                   --skip-tls-verify
                 '''
+                }
             }
         }
 
